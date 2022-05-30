@@ -177,16 +177,6 @@ namespace Calculator
             string ButtonText = ((Button)sender).Text;
             typeof(Calculator).GetMethod(ButtonToAction[Status][ButtonText]).Invoke(this, new[] { ButtonText });
         }
-
-        /// <summary>
-        /// 在輸入數字模式下將輸入的數字更新道數字上
-        /// </summary>
-        /// <param name="Digit">所輸入的數字</param>
-        public void DigitAddDigitOld(string Digit)
-        {
-            CurVal = double.Parse(CurVal + Digit).ToString();
-            RichTextBoxCurrent.Text = CurVal;
-        }
         
         /// <summary>
         /// 在輸入數字模式下將輸入的數字更新道數字上
@@ -195,17 +185,6 @@ namespace Calculator
         public void DigitAddDigit(string Digit)
         {
             RichTextBoxCurrent.Text = int.Parse(RichTextBoxCurrent.Text + Digit).ToString();
-        }
-
-        /// <summary>
-        /// 在輸入數字模式下按下小數點後將模式切換到浮點數輸入
-        /// </summary>
-        /// <param name="Dot">小數點</param>
-        public void DigitAddDotOld(string Dot)
-        {
-            CurVal += Dot;
-            RichTextBoxCurrent.Text = CurVal;
-            this.Status = FLOAT;
         }
         
         /// <summary>
@@ -217,16 +196,6 @@ namespace Calculator
             RichTextBoxCurrent.Text += Dot;
             this.Status = FLOAT;
         }
-
-        /// <summary>
-        /// 在目前已經在輸入浮點數的情況且接著輸入數字的情況下將數字加到現有浮點數的後面
-        /// </summary>
-        /// <param name="Digit">所輸入的數字</param>
-        public void FloatAddDigitOld(string Digit)
-        {
-            CurVal += Digit;
-            RichTextBoxCurrent.Text = CurVal;
-        }
         
         /// <summary>
         /// 在目前已經在輸入浮點數的情況且接著輸入數字的情況下將數字加到現有浮點數的後面
@@ -235,17 +204,6 @@ namespace Calculator
         public void FloatAddDigit(string Digit)
         {
             RichTextBoxCurrent.Text += Digit;
-        }
-
-        /// <summary>
-        /// 在輸入運算元之後輸入數字時將數字更新到下方的欄位定將狀態切換到剛輸入數字
-        /// </summary>
-        /// <param name="Digit">所輸入的數字</param>
-        public void OperatorAddDigitOld(string Digit)
-        {
-            CurVal = Digit;
-            RichTextBoxCurrent.Text = Digit;
-            this.Status = DIGIT;
         }
         
         /// <summary>
@@ -257,17 +215,6 @@ namespace Calculator
             RichTextBoxCurrent.Text = Digit;
             this.Status = DIGIT;
         }
-
-        /// <summary>
-        /// 當前一個按下的按鍵為運算元時，按下.的按鍵後自動在其之前補上0，並將狀態切換到剛輸入浮點數數字
-        /// </summary>
-        /// <param name="Dot">小數點</param>
-        public void OperatorDotAutoZeroOld(string Dot)
-        {
-            CurVal = "0.";
-            RichTextBoxCurrent.Text = CurVal;
-            this.Status = FLOAT;
-        }
         
         /// <summary>
         /// 當前一個按下的按鍵為運算元時，按下.的按鍵後自動在其之前補上0，並將狀態切換到剛輸入浮點數數字
@@ -278,15 +225,6 @@ namespace Calculator
             RichTextBoxCurrent.Text = "0.";
             this.Status = FLOAT;
         }
-
-        /// <summary>
-        /// 當前一個輸入的是運算元但又重複輸入運算元時，用新輸入的運算元取代原有的運算元
-        /// </summary>
-        /// <param name="Operator">輸入的運算元</param>
-        public void OperatorReplaceOperatorOld(string Operator)
-        {
-            RichTextBoxPrevious.Text = PrevVal + Operator;
-        }
         
         /// <summary>
         /// 當前一個輸入的是運算元但又重複輸入運算元時，用新輸入的運算元取代原有的運算元
@@ -295,19 +233,6 @@ namespace Calculator
         public void OperatorReplaceOperator(string Operator)
         {
             RichTextBoxPrevious.Text = RichTextBoxPrevious.Text.Remove(RichTextBoxPrevious.Text.Length - 1) + Operator;
-        }
-
-        /// <summary>
-        /// 在前一個輸入的按鈕是等號接著輸入數字時，用新輸入的數字取代運算結果，並將狀態切換到剛輸入數字
-        /// </summary>
-        /// <param name="Digit">輸入的數字</param>
-        public void EqualReplaceDigitOld(string Digit)
-        {
-            PrevVal = string.Empty;
-            CurVal = Digit;
-            RichTextBoxPrevious.Text = PrevVal;
-            RichTextBoxCurrent.Text = CurVal;
-            this.Status = DIGIT;
         }
         
         /// <summary>
@@ -336,35 +261,9 @@ namespace Calculator
         /// 在前一個輸入是等號接著輸入運算元的時候，讓算盤基於等號的運算結果繼續去運算，並將狀態切換到剛輸入運算元
         /// </summary>
         /// <param name="Operator">輸入的運算元</param>
-        public void EqualAddOperatorOld(string Operator)
-        {
-            RichTextBoxPrevious.Text = PrevVal + Operator;
-            //???
-            this.Status = OPERATOR;
-        }
-
-        /// <summary>
-        /// 在前一個輸入是等號接著輸入運算元的時候，讓算盤基於等號的運算結果繼續去運算，並將狀態切換到剛輸入運算元
-        /// </summary>
-        /// <param name="Operator">輸入的運算元</param>
         public void EqualAddOperator(string Operator)
         {
             RichTextBoxPrevious.Text = RichTextBoxCurrent.Text + Operator;
-            this.Status = OPERATOR;
-        }
-
-        /// <summary>
-        /// 當按下運算元的按鍵時去計算前面的運算式，並將狀態切換到剛輸入運算元
-        /// </summary>
-        /// <param name="Operator">輸入的運算元</param>
-        public void AddOperatorOld(string Operator)
-        {
-            PrevVal = new Expression((RichTextBoxPrevious.Text + CurVal).Replace('÷', '/').Replace('×', '*')).Evaluate().ToString();
-            CurVal = PrevVal;
-
-            //Original
-            RichTextBoxPrevious.Text = PrevVal + Operator;
-            RichTextBoxCurrent.Text = PrevVal;
             this.Status = OPERATOR;
         }
         
@@ -374,24 +273,8 @@ namespace Calculator
         /// <param name="Operator">輸入的運算元</param>
         public void AddOperator(string Operator)
         {
-            //MOD
             RichTextBoxPrevious.Text += RichTextBoxCurrent.Text + Operator;
             this.Status = OPERATOR;
-        }
-
-        /// <summary>
-        /// 當按下等號時去計算結果並將運算式以及結果顯示在畫面中，並將狀態切換到剛輸入等號
-        /// </summary>
-        /// <param name="Operator">輸入的運算元</param>
-        public void AddEqualOld(string Operator)
-        {
-            string Expression = RichTextBoxPrevious.Text + CurVal + "=";
-            string Result = new Expression((RichTextBoxPrevious.Text + CurVal).Replace('÷', '/').Replace('×', '*')).Evaluate().ToString();
-            RichTextBoxPrevious.Text = Expression;
-            RichTextBoxCurrent.Text = Result;
-            PrevVal = Result;
-            CurVal = Result;
-            this.Status = EQUAL;
         }
         
         /// <summary>
@@ -406,16 +289,6 @@ namespace Calculator
             RichTextBoxCurrent.Text = Result;
             this.Status = EQUAL;
         }
-
-        /// <summary>
-        /// 清除目前輸入的數字
-        /// </summary>
-        /// <param name="str">按鍵的符號</param>
-        public void CEOld(string str)
-        {
-            CurVal = "0";
-            RichTextBoxCurrent.Text = CurVal;
-        }
         
         /// <summary>
         /// 清除目前輸入的數字
@@ -425,17 +298,6 @@ namespace Calculator
         {
             RichTextBoxCurrent.Text = "0";
             this.Status = DIGIT;
-        }
-
-        /// <summary>
-        /// 清除所有的計算資料
-        /// </summary>
-        /// <param name="str">按鍵的符號</param>
-        public void COld(string str)
-        {
-            CE(str);
-            PrevVal = "0";
-            RichTextBoxPrevious.Text = string.Empty;
         }
         
         /// <summary>
@@ -447,16 +309,6 @@ namespace Calculator
             CE(str);
             RichTextBoxPrevious.Text = string.Empty;
             this.Status = DIGIT;
-        }
-
-        /// <summary>
-        /// 刪除現正輸入的數字的一個位數
-        /// </summary>
-        /// <param name="str">按鍵的符號</param>
-        public void DelOld(string str)
-        {
-            CurVal = ("0" + CurVal).Remove(CurVal.Length);
-            RichTextBoxCurrent.Text = CurVal;
         }
         
         /// <summary>
