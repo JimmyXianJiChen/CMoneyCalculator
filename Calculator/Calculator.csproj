@@ -58,12 +58,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Calculator.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="Calculator.cs" />
     <Compile Include="Calculator.Designer.cs">
       <DependentUpon>Calculator.cs</DependentUpon>
     </Compile>
+    <Compile Include="ButtonEventHandler.cs" />
+    <Compile Include="DigitHandler.cs" />
+    <Compile Include="EqualHandler.cs" />
+    <Compile Include="IntegerHandler.cs" />
+    <Compile Include="NonEqualHandler.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Calculator.resx">

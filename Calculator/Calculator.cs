@@ -1,16 +1,32 @@
 ﻿using NCalc2;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Calculator
 {
+    public static class STATUS
+    {
+        /// <summary>
+        /// 正在輸入整數的狀態
+        /// </summary>
+        public const string INTEGER = "INTEGER";
+
+        /// <summary>
+        /// 正在輸入浮點數的狀態
+        /// </summary>
+        public const string FLOAT = "FLOAT";
+
+        /// <summary>
+        /// 剛輸入完運算元的狀態
+        /// </summary>
+        public const string OPERATOR = "OPERATOR";
+
+        /// <summary>
+        /// 剛輸入完等號的狀態
+        /// </summary>
+        public const string EQUAL = "EQUAL";
+    }
     public partial class Calculator : Form
     {
         /// <summary>
@@ -41,17 +57,7 @@ namespace Calculator
         /// <summary>
         /// 目前的輸入狀態
         /// </summary>
-        private string Status;
-
-        /// <summary>
-        /// 之前所有輸入運算式的運算結果
-        /// </summary>
-        private string PrevVal = "0";
-
-        /// <summary>
-        /// 目前正在輸入的數字
-        /// </summary>
-        private string CurVal = "0";
+        public string Status { get; private set; }
 
         /// <summary>
         /// Calculator的Constructor
@@ -177,6 +183,12 @@ namespace Calculator
             string ButtonText = ((Button)sender).Text;
             typeof(Calculator).GetMethod(ButtonToAction[Status][ButtonText]).Invoke(this, new[] { ButtonText });
         }
+
+        public void IntegerHandler(string ButtonText)
+        {
+            //typeof(Calculator).GetMethod(Integer[ButtonText]).
+        }
+
         
         /// <summary>
         /// 在輸入數字模式下將輸入的數字更新道數字上

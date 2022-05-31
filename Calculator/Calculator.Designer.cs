@@ -354,9 +354,9 @@
         private System.Windows.Forms.Button ButtonMinus;
         private System.Windows.Forms.Button ButtonMultiply;
         private System.Windows.Forms.Button ButtonDivide;
-        private System.Windows.Forms.Button Button0;
         private System.Windows.Forms.Button ButtonDot;
 
+        private System.Windows.Forms.Button Button0;
         private System.Windows.Forms.Button Button1;
         private System.Windows.Forms.Button Button2;
         private System.Windows.Forms.Button Button3;
@@ -366,8 +366,8 @@
         private System.Windows.Forms.Button Button7;
         private System.Windows.Forms.Button Button8;
         private System.Windows.Forms.Button Button9;
-        private System.Windows.Forms.RichTextBox RichTextBoxCurrent;
-        private System.Windows.Forms.RichTextBox RichTextBoxPrevious;
+        public System.Windows.Forms.RichTextBox RichTextBoxCurrent { get; private set; }
+        public System.Windows.Forms.RichTextBox RichTextBoxPrevious { get; private set; }
         private System.Windows.Forms.Button ButtonC;
         private System.Windows.Forms.Button ButtonCE;
         private System.Windows.Forms.Button ButtonDel;
