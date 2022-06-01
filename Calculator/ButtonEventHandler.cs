@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 using System.Windows.Forms;
-using static Calculator.STATUS;
+using static Calculator.CalculatorStatus;
 
 namespace Calculator
 {
@@ -16,26 +16,6 @@ namespace Calculator
         protected RichTextBox RichTextBoxPrevious;
         protected RichTextBox RichTextBoxCurrent;
         protected Dictionary<string, string> ButtonTextToActions = new Dictionary<string, string>();
-        
-        /// <summary>
-        /// 正在輸入整數的狀態
-        /// </summary>
-        public const string DIGIT = "Digit";
-
-        /// <summary>
-        /// 剛輸入完運算元的狀態
-        /// </summary>
-        public const string OPERATOR = "Operator";
-
-        /// <summary>
-        /// 正在輸入浮點數的狀態
-        /// </summary>
-        public const string FLOAT = "Float";
-
-        /// <summary>
-        /// 剛輸入完等號的狀態
-        /// </summary>
-        public const string EQUAL = "Equal";
 
         public ButtonEventHandler(Calculator Calculator)
         {
@@ -43,7 +23,6 @@ namespace Calculator
             this.RichTextBoxPrevious = Calculator.RichTextBoxPrevious;
             this.RichTextBoxCurrent = Calculator.RichTextBoxCurrent;
         }
-
 
         public abstract Dictionary<string, string> AddDigit(string Digit);
 
@@ -77,7 +56,7 @@ namespace Calculator
         /// <param name="str">按鍵的符號</param>
         public Dictionary<string, string> C(string C)
         {
-            return ButtonEventHandlerResultGenerator(string.Empty, "0", Calculator.STATUS.INTEGER);
+            return ButtonEventHandlerResultGenerator(string.Empty, Calculator.DefaultInteger, CalculatorStatus.INTEGER);
         }
 
         /// <summary>
@@ -97,7 +76,7 @@ namespace Calculator
             return new Dictionary<string, string>
                 {
                     { "PreviousText", PreviousText },
-                    { "CurrrentText", CurrentText },
+                    { "CurrentText", CurrentText },
                     { "Status", Status }
                 };
         }
@@ -106,9 +85,9 @@ namespace Calculator
         /// 當輸入的符號不合法時不採取任何動作
         /// </summary>
         /// <param name="str">按鍵的符號</param>
-        public string NoAction(string str)
+        protected Dictionary<string, string> NoAction()
         {
-            return this.Calculator.Status;
+            return ButtonEventHandlerResultGenerator(this.Calculator.RichTextBoxPrevious.Text, this.Calculator.RichTextBoxCurrent.Text, this.Calculator.Status);
         }
     }
 }

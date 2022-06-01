@@ -11,7 +11,6 @@ namespace Calculator
     {
         public NonEqualHandler(Calculator Calculator) : base(Calculator)
         {
-
         }
 
         /// <summary>
@@ -22,7 +21,7 @@ namespace Calculator
         {
             string Expression = RichTextBoxPrevious.Text + RichTextBoxCurrent.Text + "=";
             string Result = new Expression((RichTextBoxPrevious.Text + RichTextBoxCurrent.Text).Replace('÷', '/').Replace('×', '*')).Evaluate().ToString();
-            return ButtonEventHandlerResultGenerator(Expression, Result, this.Calculator.Status);
+            return ButtonEventHandlerResultGenerator(Expression, Result, CalculatorStatus.EQUAL);
         }
 
         /// <summary>
@@ -31,45 +30,16 @@ namespace Calculator
         /// <param name="str">按鍵的符號</param>
         public override Dictionary<string, string> CE(string str)
         {
-            return ButtonEventHandlerResultGenerator(RichTextBoxPrevious.Text, "0", DIGIT);
-        }
-
-        /// <summary>
-        /// 清除所有的計算資料
-        /// </summary>
-        /// <param name="str">按鍵的符號</param>
-        public override Dictionary<string, string> C(string str)
-        {
-            CE(str);
-            RichTextBoxPrevious.Text = string.Empty;
-            this.Status = DIGIT;
-        }
-
-        /// <summary>
-        /// 刪除現正輸入的數字的一個位數
-        /// </summary>
-        /// <param name="str">按鍵的符號</param>
-        public void Del(string str)
-        {
-            RichTextBoxCurrent.Text = new Expression(("0" + RichTextBoxCurrent.Text).Remove(RichTextBoxCurrent.Text.Length)).Evaluate().ToString();
-            try
-            {
-                int.Parse(RichTextBoxCurrent.Text);
-                this.Status = DIGIT;
-            }
-            catch
-            {
-                this.Status = FLOAT;
-            }
+            return ButtonEventHandlerResultGenerator(this.Calculator.RichTextBoxPrevious.Text, Calculator.DefaultInteger, CalculatorStatus.INTEGER);
         }
 
         /// <summary>
         /// 將數字轉換正負值
         /// </summary>
         /// <param name="str">Botton.Text</param>
-        public void Negate(string str)
+        public override Dictionary<string, string> Negate(string str)
         {
-            RichTextBoxCurrent.Text = (double.Parse(RichTextBoxCurrent.Text) * -1).ToString();
+            return ButtonEventHandlerResultGenerator(this.Calculator.RichTextBoxPrevious.Text, (double.Parse(this.Calculator.RichTextBoxCurrent.Text) * -1).ToString(), this.Calculator.Status);
         }
     }
 }

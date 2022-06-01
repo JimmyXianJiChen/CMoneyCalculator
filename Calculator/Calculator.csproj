@@ -65,8 +65,10 @@
     <Compile Include="ButtonEventHandler.cs" />
     <Compile Include="DigitHandler.cs" />
     <Compile Include="EqualHandler.cs" />
+    <Compile Include="FloatHandler.cs" />
     <Compile Include="IntegerHandler.cs" />
     <Compile Include="NonEqualHandler.cs" />
+    <Compile Include="OperatorHandler.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Calculator.resx">
