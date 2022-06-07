@@ -67,6 +67,7 @@
     <Compile Include="EqualHandler.cs" />
     <Compile Include="FloatHandler.cs" />
     <Compile Include="IntegerHandler.cs" />
+    <Compile Include="MyExpression.cs" />
     <Compile Include="NonEqualHandler.cs" />
     <Compile Include="OperatorHandler.cs" />
     <Compile Include="Program.cs" />

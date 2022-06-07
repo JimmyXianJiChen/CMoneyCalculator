@@ -30,6 +30,12 @@ namespace Calculator
 
     public partial class Calculator : Form
     {
+
+        public string PreviousOperator;
+        public string CurrentOperator;
+        public string PreviousValue;
+        public string CurrentValue;
+
         /// <summary>
         /// 預設的整數值
         /// </summary>
@@ -97,6 +103,9 @@ namespace Calculator
                 {"Del", "Del" },
                 {"+/-", "Negate" }
             };
+
+            PreviousOperator = "NULL";
+            CurrentOperator = "NULL";
         }
 
         /// <summary>

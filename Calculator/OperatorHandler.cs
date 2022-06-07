@@ -12,6 +12,7 @@ namespace Calculator
         {
         }
 
+
         public override Dictionary<string, string> AddDigit(string Digit)
         {
             return ButtonEventHandlerResultGenerator(this.Calculator.RichTextBoxPrevious.Text, Digit, CalculatorStatus.INTEGER);
@@ -24,7 +25,9 @@ namespace Calculator
 
         public override Dictionary<string, string> AddOperator(string Operator)
         {
-            return ButtonEventHandlerResultGenerator(this.Calculator.RichTextBoxPrevious.Text.Remove(this.Calculator.RichTextBoxPrevious.Text.Length) + Operator, this.Calculator.RichTextBoxCurrent.Text, CalculatorStatus.OPERATOR);
+            //TEST
+            this.Calculator.CurrentOperator = Operator;
+            return ButtonEventHandlerResultGenerator(this.Calculator.RichTextBoxPrevious.Text.Remove(this.Calculator.RichTextBoxPrevious.Text.Length-1) + " " + Operator + " ", this.Calculator.RichTextBoxCurrent.Text, CalculatorStatus.OPERATOR);
         }
 
         public override Dictionary<string, string> Del(string Del)

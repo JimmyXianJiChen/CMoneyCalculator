@@ -13,15 +13,15 @@ namespace Calculator
     public abstract class ButtonEventHandler
     {
         protected readonly Calculator Calculator;
-        protected RichTextBox RichTextBoxPrevious;
-        protected RichTextBox RichTextBoxCurrent;
+
         protected Dictionary<string, string> ButtonTextToActions = new Dictionary<string, string>();
+
+
+
 
         public ButtonEventHandler(Calculator Calculator)
         {
             this.Calculator = Calculator;
-            this.RichTextBoxPrevious = Calculator.RichTextBoxPrevious;
-            this.RichTextBoxCurrent = Calculator.RichTextBoxCurrent;
         }
 
         public abstract Dictionary<string, string> AddDigit(string Digit);
@@ -88,6 +88,23 @@ namespace Calculator
         protected Dictionary<string, string> NoAction()
         {
             return ButtonEventHandlerResultGenerator(this.Calculator.RichTextBoxPrevious.Text, this.Calculator.RichTextBoxCurrent.Text, this.Calculator.Status);
+        }
+
+        public char? GetPreviousOperator(string Expression)
+        {
+            char[] charArray = Expression.ToCharArray();
+            char[] Operators = { '+', '-', '×', '÷' };
+            Array.Reverse(charArray);
+            string ReversedExpression = new string(charArray);
+            int IndexOfLastOperator = ReversedExpression.IndexOfAny(Operators);
+            try
+            {
+                return ReversedExpression[IndexOfLastOperator];
+            }
+            catch
+            {
+                return null;
+            }
         }
     }
 }

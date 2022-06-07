@@ -31,7 +31,9 @@ namespace Calculator
 
         public override Dictionary<string, string> AddOperator(string Operator)
         {
-            return ButtonEventHandlerResultGenerator(this.Calculator.RichTextBoxCurrent.Text + Operator, this.Calculator.RichTextBoxCurrent.Text, CalculatorStatus.OPERATOR);
+            Calculator.CurrentValue = this.Calculator.RichTextBoxCurrent.Text;
+            Calculator.CurrentOperator = Operator;
+            return ButtonEventHandlerResultGenerator(this.Calculator.RichTextBoxCurrent.Text + " " +　Operator + " ", this.Calculator.RichTextBoxCurrent.Text, CalculatorStatus.OPERATOR);
         }
 
         public override Dictionary<string, string> CE(string CE)
