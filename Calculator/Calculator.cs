@@ -5,12 +5,29 @@ using System.Windows.Forms;
 
 namespace Calculator
 {
+    /// <summary>
+    /// Calculator 物件定義
+    /// </summary>
     public partial class Calculator : Form
     {
-
+        /// <summary>
+        /// 用於紀錄當下運算式中的第一個運算元
+        /// </summary>
         private string PreviousOperator;
+
+        /// <summary>
+        /// 用於紀錄當下運算式中的第二個運算元
+        /// </summary>
         private string CurrentOperator;
+
+        /// <summary>
+        /// 用於紀錄當下運算式中的第一個運算子
+        /// </summary>
         private string PreviousValue;
+
+        /// <summary>
+        /// 用於紀錄當下運算式中的第二個運算子
+        /// </summary>
         private string CurrentValue;
 
         /// <summary>
@@ -23,8 +40,14 @@ namespace Calculator
         /// </summary>
         public const string DefaultFloat = "0.";
 
+        /// <summary>
+        /// 預設用於紀錄前兩個運算元的變數的預設值
+        /// </summary>
         public const string DefaultOperator = "NULL";
 
+        /// <summary>
+        /// 預設用於紀錄前兩個運算子的變數的預設值
+        /// </summary>
         public const string DefaultValue = "NULL";
 
         /// <summary>
@@ -115,11 +138,10 @@ namespace Calculator
             return new CalculatorConfig(RichTextBoxPrevious.Text, RichTextBoxCurrent.Text, Status, PreviousValue, CurrentValue, PreviousOperator, CurrentOperator);
         }
 
-
         /// <summary>
         /// 將Calculator的狀態設置成所傳入的狀態
         /// </summary>
-        /// <param name="CalculatorConfig"></param>
+        /// <param name="CalculatorConfig">呼叫函式當下Calculator的狀態</param>
         private void SetCalculatorToConfig(CalculatorConfig CalculatorConfig)
         {
             RichTextBoxPrevious.Text = CalculatorConfig.TextOfRichTextBoxPrevious;

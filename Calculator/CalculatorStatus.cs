@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace Calculator
 {
+    /// <summary>
+    /// Calculator狀態
+    /// </summary>
     public static class CalculatorStatus
     {
         /// <summary>

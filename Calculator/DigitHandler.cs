@@ -7,9 +7,15 @@ using System.Threading.Tasks;
 
 namespace Calculator
 {
+    /// <summary>
+    /// 負責在剛輸入數字的狀態下處理按鈕事件的處理器的父類
+    /// </summary>
     public abstract class DigitHandler : NonEqualHandler
     {
-        protected Dictionary<string, string> PreviousOperatorToConfigUpdateMethod = new Dictionary<string, string>
+        /// <summary>
+        /// 計錄依據算系統所記錄的第一個運算元所對應到該執行的函式的字典
+        /// </summary>
+        private readonly Dictionary<string, string> PreviousOperatorToConfigUpdateMethod = new Dictionary<string, string>
         {
             { "+", "PreviousAddMinusConfigUpdate"},
             { "-", "PreviousAddMinusConfigUpdate"},
@@ -18,6 +24,12 @@ namespace Calculator
             { "NULL", "PreviousNullConfigUpdate" }
         };
 
+        /// <summary>
+        /// 當前一個運算元為非NULL且是加或減的時候更新運算系統資料
+        /// </summary>
+        /// <param name="CalculatorConfig">呼叫函式當下Calculator的狀態</param>
+        /// <param name="Operator">當下的運算元</param>
+        /// <returns>完成動作後Calculator的狀態</returns>
         public CalculatorConfig PreviousAddMinusConfigUpdate(CalculatorConfig CalculatorConfig, string Operator)
         {
             CalculatorConfig.CurrentValue = CalculateCurrent(CalculatorConfig);
@@ -25,6 +37,12 @@ namespace Calculator
             return CalculatorConfig;
         }
 
+        /// <summary>
+        /// 當前一個運算元為非NULL且是乘或除的時候更新運算系統資料
+        /// </summary>
+        /// <param name="CalculatorConfig">呼叫函式當下Calculator的狀態</param>
+        /// <param name="Operator">當下的運算元</param>
+        /// <returns>完成動作後Calculator的狀態</returns>
         public CalculatorConfig PreviousMultiplyDivideConfigUpdate(CalculatorConfig CalculatorConfig, string Operator)
         {
             CalculatorConfig.PreviousValue = CalculatePrevious(CalculatorConfig);
@@ -34,6 +52,12 @@ namespace Calculator
             return CalculatorConfig;
         }
 
+        /// <summary>
+        /// 當前一個運算元是NULL時更新運算系統資料
+        /// </summary>
+        /// <param name="CalculatorConfig">呼叫函式當下Calculator的狀態</param>
+        /// <param name="Operator">當下的運算元</param>
+        /// <returns>完成動作後Calculator的狀態</returns>
         public CalculatorConfig PreviousNullConfigUpdate(CalculatorConfig CalculatorConfig, string Operator)
         {
             CalculatorConfig.PreviousOperator = CalculatorConfig.CurrentOperator;
@@ -43,31 +67,33 @@ namespace Calculator
             return CalculatorConfig;
         }
 
-
-        //TODO!!
+        /// <summary>
+        /// 在輸入數字的情況下加入運算元，並將數字與運算元更新到運算式中
+        /// </summary>
+        /// <param name="CalculatorConfig">呼叫函式當下Calculator的狀態</param>
+        /// <param name="Operator">運算元</param>
+        /// <returns>完成動作後Calculator的狀態</returns>
         public override CalculatorConfig AddOperator(CalculatorConfig CalculatorConfig, string Operator)
         {
-
             string EquationUpToDate = CalculatorConfig.TextOfRichTextBoxPrevious + CalculatorConfig.TextOfRichTextBoxCurrent;
             string ValueUpToDate = CalculateFinalValue(CalculatorConfig);
 
             string tt = PreviousOperatorToConfigUpdateMethod[CalculatorConfig.PreviousOperator];
-            //TEST
-            //WATH out object[]!!! May Error
             CalculatorConfig = (CalculatorConfig) typeof(DigitHandler).GetMethod(PreviousOperatorToConfigUpdateMethod[CalculatorConfig.PreviousOperator]).Invoke(this, new object[] { CalculatorConfig, Operator });
 
             CalculatorConfig.TextOfRichTextBoxPrevious = EquationUpToDate + Operator;
-            CalculatorConfig.TextOfRichTextBoxCurrent = ValueUpToDate;//tt + "/" + ValueUpToDate + "/" + CalculatorConfig.PreviousOperator + "/" + CalculatorConfig.CurrentOperator + "/" + Operator;
+            CalculatorConfig.TextOfRichTextBoxCurrent = ValueUpToDate;
             CalculatorConfig.Status = CalculatorStatus.OPERATOR;
 
             return CalculatorConfig;
-
-
-            //string EquationUpToDate = TextOfRichTextBoxPrevious + TextOfRichTextBoxCurrent;
-            //string ValueUpToDate = new Expression(EquationUpToDate.Replace('÷', '/').Replace('×', '*')).Evaluate().ToString();
-            //return ButtonEventHandlerResultGenerator(EquationUpToDate + " " + Operator + " ", ValueUpToDate, CalculatorStatus.OPERATOR);
         }
 
+        /// <summary>
+        /// 刪除現正輸入的數字的一個位數
+        /// </summary>
+        /// <param name="CalculatorConfig">呼叫函式當下Calculator的狀態</param>
+        /// <param name="Del">Del</param>
+        /// <returns>完成動作後Calculator的狀態</returns>
         public override CalculatorConfig Del(CalculatorConfig CalculatorConfig, string Del)
         {
             string DeletedString = new Expression(("0" + CalculatorConfig.TextOfRichTextBoxCurrent).Remove(CalculatorConfig.TextOfRichTextBoxCurrent.Length)).Evaluate().ToString();
