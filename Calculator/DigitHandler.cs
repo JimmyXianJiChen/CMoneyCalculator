@@ -9,52 +9,79 @@ namespace Calculator
 {
     public abstract class DigitHandler : NonEqualHandler
     {
-        protected Dictionary<string, string> PreviousOperatorToStatus = new Dictionary<string, string>
+        protected Dictionary<string, string> PreviousOperatorToConfigUpdateMethod = new Dictionary<string, string>
         {
-            { "+", "PREVIOUSADDMINUS"},
-            { "-", "PREVIOUSADDMINUS"},
-            { "×", "PREVIOUSMULTIPLYDIVIDE"},
-            { "÷", "PREVIOUSMULTIPLYDIVIDE"},
-            { "NULL", "PREVIOUSNULL" }
+            { "+", "PreviousAddMinusConfigUpdate"},
+            { "-", "PreviousAddMinusConfigUpdate"},
+            { "×", "PreviousMultiplyDivideConfigUpdate"},
+            { "÷", "PreviousMultiplyDivideConfigUpdate"},
+            { "NULL", "PreviousNullConfigUpdate" }
         };
 
-        public void PREVIOUSNULL(string Operator)
+        public CalculatorConfig PreviousAddMinusConfigUpdate(CalculatorConfig CalculatorConfig, string Operator)
         {
-            Calculator.PreviousOperator = Calculator.CurrentOperator;
-            Calculator.CurrentOperator = Operator;
-            Calculator.PreviousValue = Calculator.CurrentValue;
-            Calculator.CurrentValue = this.Calculator.RichTextBoxCurrent.Text;
+            CalculatorConfig.CurrentValue = CalculateCurrent(CalculatorConfig);
+            CalculatorConfig.CurrentOperator = Operator;
+            return CalculatorConfig;
         }
 
-        public DigitHandler(Calculator Calculator) : base(Calculator)
+        public CalculatorConfig PreviousMultiplyDivideConfigUpdate(CalculatorConfig CalculatorConfig, string Operator)
         {
+            CalculatorConfig.PreviousValue = CalculatePrevious(CalculatorConfig);
+            CalculatorConfig.CurrentValue = CalculatorConfig.TextOfRichTextBoxCurrent;
+            CalculatorConfig.PreviousOperator = CalculatorConfig.CurrentOperator;
+            CalculatorConfig.CurrentOperator = Operator;
+            return CalculatorConfig;
         }
 
-        public override Dictionary<string, string> AddOperator(string Operator)
+        public CalculatorConfig PreviousNullConfigUpdate(CalculatorConfig CalculatorConfig, string Operator)
         {
+            CalculatorConfig.PreviousOperator = CalculatorConfig.CurrentOperator;
+            CalculatorConfig.CurrentOperator = Operator;
+            CalculatorConfig.PreviousValue = CalculatorConfig.CurrentValue;
+            CalculatorConfig.CurrentValue = CalculatorConfig.TextOfRichTextBoxCurrent;
+            return CalculatorConfig;
+        }
+
+
+        //TODO!!
+        public override CalculatorConfig AddOperator(CalculatorConfig CalculatorConfig, string Operator)
+        {
+
+            string EquationUpToDate = CalculatorConfig.TextOfRichTextBoxPrevious + CalculatorConfig.TextOfRichTextBoxCurrent;
+            string ValueUpToDate = CalculateFinalValue(CalculatorConfig);
+
+            string tt = PreviousOperatorToConfigUpdateMethod[CalculatorConfig.PreviousOperator];
             //TEST
-            typeof(DigitHandler).GetMethod(PreviousOperatorToStatus[Calculator.PreviousOperator]).Invoke(this, new[] { Operator});
+            //WATH out object[]!!! May Error
+            CalculatorConfig = (CalculatorConfig) typeof(DigitHandler).GetMethod(PreviousOperatorToConfigUpdateMethod[CalculatorConfig.PreviousOperator]).Invoke(this, new object[] { CalculatorConfig, Operator });
+
+            CalculatorConfig.TextOfRichTextBoxPrevious = EquationUpToDate + Operator;
+            CalculatorConfig.TextOfRichTextBoxCurrent = ValueUpToDate;//tt + "/" + ValueUpToDate + "/" + CalculatorConfig.PreviousOperator + "/" + CalculatorConfig.CurrentOperator + "/" + Operator;
+            CalculatorConfig.Status = CalculatorStatus.OPERATOR;
+
+            return CalculatorConfig;
 
 
-            string EquationUpToDate = this.Calculator.RichTextBoxPrevious.Text + this.Calculator.RichTextBoxCurrent.Text;
-            string ValueUpToDate = new Expression(EquationUpToDate.Replace('÷', '/').Replace('×', '*')).Evaluate().ToString();
-            return ButtonEventHandlerResultGenerator(EquationUpToDate + " " + Operator + " ", ValueUpToDate, CalculatorStatus.OPERATOR);
+            //string EquationUpToDate = TextOfRichTextBoxPrevious + TextOfRichTextBoxCurrent;
+            //string ValueUpToDate = new Expression(EquationUpToDate.Replace('÷', '/').Replace('×', '*')).Evaluate().ToString();
+            //return ButtonEventHandlerResultGenerator(EquationUpToDate + " " + Operator + " ", ValueUpToDate, CalculatorStatus.OPERATOR);
         }
 
-        public override Dictionary<string, string> Del(string Del)
+        public override CalculatorConfig Del(CalculatorConfig CalculatorConfig, string Del)
         {
-            string DeletedString = new Expression(("0" + this.Calculator.RichTextBoxCurrent.Text).Remove(this.Calculator.RichTextBoxCurrent.Text.Length)).Evaluate().ToString();
-            string StatusAfterDeletion;
+            string DeletedString = new Expression(("0" + CalculatorConfig.TextOfRichTextBoxCurrent).Remove(CalculatorConfig.TextOfRichTextBoxCurrent.Length)).Evaluate().ToString();
+            CalculatorConfig.TextOfRichTextBoxCurrent = DeletedString;
             try
             {
-                int.Parse(this.Calculator.RichTextBoxCurrent.Text);
-                StatusAfterDeletion = CalculatorStatus.INTEGER;
+                int.Parse(DeletedString);
+                CalculatorConfig.Status = CalculatorStatus.INTEGER;
             }
             catch
             {
-                StatusAfterDeletion = CalculatorStatus.FLOAT;
+                CalculatorConfig.Status = CalculatorStatus.FLOAT;
             }
-            return ButtonEventHandlerResultGenerator(this.Calculator.RichTextBoxPrevious.Text, DeletedString, StatusAfterDeletion);
+            return CalculatorConfig;
         }
     }
 }

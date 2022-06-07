@@ -9,85 +9,38 @@ namespace Calculator
 {
     public abstract class NonEqualHandler : ButtonEventHandler
     {
-        public List<string> ininin = new List<string>();
+        private readonly StringCalculationHelper StringCalculationHelper;
 
-        public Dictionary<string, string> OperatorToAction = new Dictionary<string, string>
+        public NonEqualHandler()
         {
-            { "+", "ADD"},
-            { "-", "MINUS"},
-            { "×", "MULTIPLY"},
-            { "÷", "DIVIDE"}
-        };
-
-        public string ADD(string A, string B)
-        {
-            ininin.Add("ADD");
-            return (double.Parse(A) + double.Parse(B)).ToString();
-        }
-        public string MINUS(string A, string B)
-        {
-            return (double.Parse(A) - double.Parse(B)).ToString();
-        }
-        public string MULTIPLY(string A, string B)
-        {
-            return (double.Parse(A) * double.Parse(B)).ToString();
-        }
-        public string DIVIDE(string A, string B)
-        {
-            return (double.Parse(A) / double.Parse(B)).ToString();
+            this.StringCalculationHelper = new StringCalculationHelper();
         }
 
-        public string CalculatePrevious()
+        public string CalculatePrevious(CalculatorConfig CalculatorConfig)
         {
-            ininin.Add("Cal prev");
-            return typeof(NonEqualHandler).GetMethod(OperatorToAction[Calculator.PreviousOperator]).Invoke(this, new[] { Calculator.PreviousValue, Calculator.CurrentValue }).ToString();
+            return StringCalculationHelper.Calculate(CalculatorConfig.PreviousValue, CalculatorConfig.PreviousOperator, CalculatorConfig.CurrentValue);
         }
 
-        public string CalculateCurrent()
+        public string CalculateCurrent(CalculatorConfig CalculatorConfig)
         {
-            ininin.Add("Cal cur");
-            var aa = Calculator.CurrentValue;
-            var ab = this.Calculator.RichTextBoxCurrent.Text;
-            var ac = OperatorToAction[Calculator.CurrentOperator];
-            var ad = ADD(Calculator.CurrentValue, this.Calculator.RichTextBoxCurrent.Text);
-            return typeof(NonEqualHandler).GetMethod(OperatorToAction[Calculator.CurrentOperator]).Invoke(this, new[] { Calculator.CurrentValue, this.Calculator.RichTextBoxCurrent.Text }).ToString();
+            return StringCalculationHelper.Calculate(CalculatorConfig.CurrentValue, CalculatorConfig.CurrentOperator, CalculatorConfig.TextOfRichTextBoxCurrent);
         }
 
-        public string GetCurrentText()
+        public string GetCurrentText(CalculatorConfig CalculatorConfig)
         {
-            return this.Calculator.RichTextBoxCurrent.Text;
+            return CalculatorConfig.TextOfRichTextBoxCurrent;
         }
 
 
-
-        public void PREVIOUSADDMINUS(string Operator)
+        public string CalculatePreviousFirst(CalculatorConfig CalculatorConfig)
         {
-            Calculator.CurrentValue = CalculateCurrent();
-            Calculator.CurrentOperator = Operator;
+            return StringCalculationHelper.Calculate(CalculatePrevious(CalculatorConfig), CalculatorConfig.CurrentOperator, CalculatorConfig.TextOfRichTextBoxCurrent);
         }
 
-        public void PREVIOUSMULTIPLYDIVIDE(string Operator)
+        public string CalculateCurrentFirst(CalculatorConfig CalculatorConfig)
         {
-            Calculator.PreviousValue = CalculatePrevious();
-            Calculator.PreviousOperator = Calculator.CurrentOperator;
-            Calculator.CurrentValue = Calculator.RichTextBoxCurrent.Text;
-            Calculator.CurrentOperator = Operator;
+            return StringCalculationHelper.Calculate(CalculatorConfig.PreviousValue, CalculatorConfig.PreviousOperator, CalculateCurrent(CalculatorConfig));
         }
-
-
-        public string CalculatePreviousFirst()
-        {
-            return typeof(NonEqualHandler).GetMethod(OperatorToAction[Calculator.CurrentOperator]).Invoke(this, new[] { CalculatePrevious(), this.Calculator.RichTextBoxCurrent.Text }).ToString();
-        }
-
-        public string CalculateCurrentFirst()
-        {
-            return typeof(NonEqualHandler).GetMethod(OperatorToAction[Calculator.PreviousOperator]).Invoke(this, new[] { Calculator.PreviousValue, CalculateCurrent() }).ToString();
-        }
-
-
-
-
 
         public Dictionary<string, string> CalculateLastTwoInstructions = new Dictionary<string, string>
         {
@@ -98,10 +51,9 @@ namespace Calculator
             { "÷", "CalculateCurrent"}
         };
 
-        public string CalculateLastTwo()
+        public string CalculateLastTwo(CalculatorConfig CalculatorConfig)
         {
-            ininin.Add("last two");
-            return typeof(NonEqualHandler).GetMethod(CalculateLastTwoInstructions[Calculator.CurrentOperator]).Invoke(this, null).ToString();
+            return typeof(NonEqualHandler).GetMethod(CalculateLastTwoInstructions[CalculatorConfig.CurrentOperator]).Invoke(this, new[] { CalculatorConfig }).ToString();
         }
 
         public Dictionary<string, string> CalculateAllThreeInstructions = new Dictionary<string, string>
@@ -112,10 +64,9 @@ namespace Calculator
             { "÷", "CalculatePreviousFirst"},
         };
 
-        public string CalculateAllThree()
+        public string CalculateAllThree(CalculatorConfig CalculatorConfig)
         {
-            ininin.Add("three");
-            return typeof(NonEqualHandler).GetMethod(CalculateAllThreeInstructions[Calculator.PreviousOperator]).Invoke(this, null).ToString();
+            return typeof(NonEqualHandler).GetMethod(CalculateAllThreeInstructions[CalculatorConfig.PreviousOperator]).Invoke(this, new[] { CalculatorConfig }).ToString();
         }
 
         public Dictionary<string, string> CalculateFinalValueInstruction = new Dictionary<string, string>
@@ -127,56 +78,76 @@ namespace Calculator
             { "÷", "CalculateAllThree"}
         };
 
-
-
-        public string CalculateFinalValue()
+        public string CalculateFinalValue(CalculatorConfig CalculatorConfig)
         {
-            ininin.Add("Cal Final Val");
-            return typeof(NonEqualHandler).GetMethod(CalculateFinalValueInstruction[Calculator.PreviousOperator]).Invoke(this, null).ToString();
+            return typeof(NonEqualHandler).GetMethod(CalculateFinalValueInstruction[CalculatorConfig.PreviousOperator]).Invoke(this, new[] { CalculatorConfig }).ToString();
         }
 
-
-        public NonEqualHandler(Calculator Calculator) : base(Calculator)
-        {
-            
-        }
 
         /// <summary>
         /// 當按下等號時去計算結果並將運算式以及結果顯示在畫面中，並將狀態切換到剛輸入等號
         /// </summary>
         /// <param name="Operator">輸入的運算元</param>
-        public override Dictionary< string, string> AddEqual(string Operator)
+        public override CalculatorConfig AddEqual(CalculatorConfig CalculatorConfig, string Operator)
         {
-            ininin.Add("AddEqual");
             //TEST
-            string ans = CalculateFinalValue();
-            Calculator.PreviousValue = "NULL";
-            Calculator.CurrentValue = "NULL";
-            Calculator.PreviousOperator = "NULL";
-            Calculator.CurrentOperator = "NULL";
-            
+            string ans = CalculateFinalValue(CalculatorConfig);
+            CalculatorConfig.PreviousValue = Calculator.DefaultValue;
+            CalculatorConfig.CurrentValue = Calculator.DefaultValue;
+            CalculatorConfig.PreviousOperator = Calculator.DefaultOperator;
+            CalculatorConfig.CurrentOperator = Calculator.DefaultOperator;
 
-            string Expression = this.Calculator.RichTextBoxPrevious.Text + this.Calculator.RichTextBoxCurrent.Text + "=";
-            string Result = new Expression((this.Calculator.RichTextBoxPrevious.Text + this.Calculator.RichTextBoxCurrent.Text).Replace('÷', '/').Replace('×', '*')).Evaluate().ToString();
-            return ButtonEventHandlerResultGenerator(Expression, Result + "??" + ans, CalculatorStatus.EQUAL);
+
+            //string Expression = CalculatorConfig.TextOfRichTextBoxPrevious + CalculatorConfig.TextOfRichTextBoxCurrent + "=";
+            //string Result = new Expression((TextOfRichTextBoxPrevious + TextOfRichTextBoxCurrent).Replace('÷', '/').Replace('×', '*')).Evaluate().ToString();
+            //return ButtonEventHandlerResultGenerator(Expression, Result, CalculatorStatus.EQUAL);
+            CalculatorConfig.TextOfRichTextBoxPrevious = CalculatorConfig.TextOfRichTextBoxPrevious + CalculatorConfig.TextOfRichTextBoxCurrent + "=";
+            CalculatorConfig.TextOfRichTextBoxCurrent = ans;
+            CalculatorConfig.Status = CalculatorStatus.EQUAL;
+            return CalculatorConfig;
         }
 
         /// <summary>
         /// 清除目前輸入的數字
         /// </summary>
         /// <param name="str">按鍵的符號</param>
-        public override Dictionary<string, string> CE(string str)
+        public override CalculatorConfig CE(CalculatorConfig CalculatorConfig, string str)
         {
-            return ButtonEventHandlerResultGenerator(this.Calculator.RichTextBoxPrevious.Text, Calculator.DefaultInteger, CalculatorStatus.INTEGER);
+            CalculatorConfig.TextOfRichTextBoxCurrent = Calculator.DefaultInteger;
+            CalculatorConfig.Status = CalculatorStatus.INTEGER;
+            return CalculatorConfig;
         }
 
         /// <summary>
         /// 將數字轉換正負值
         /// </summary>
         /// <param name="str">Botton.Text</param>
-        public override Dictionary<string, string> Negate(string str)
+        public override CalculatorConfig Negate(CalculatorConfig CalculatorConfig, string str)
         {
-            return ButtonEventHandlerResultGenerator(this.Calculator.RichTextBoxPrevious.Text, (double.Parse(this.Calculator.RichTextBoxCurrent.Text) * -1).ToString(), this.Calculator.Status);
+            CalculatorConfig.TextOfRichTextBoxCurrent = (double.Parse(CalculatorConfig.TextOfRichTextBoxCurrent) * -1).ToString();
+            return CalculatorConfig;
+        }
+
+        /// <summary>
+        /// 將所輸入的數字開根號
+        /// </summary>
+        /// <param name="CalculatorConfig">Calculator現在的狀態</param>
+        /// <param name="Root">Root</param>
+        /// <returns></returns>
+        public override CalculatorConfig Root(CalculatorConfig CalculatorConfig, string Root)
+        {
+            string root = Math.Sqrt(double.Parse(CalculatorConfig.TextOfRichTextBoxCurrent)).ToString();
+            try
+            {
+                CalculatorConfig.TextOfRichTextBoxCurrent = int.Parse(root).ToString();
+                CalculatorConfig.Status = CalculatorStatus.INTEGER;
+            }
+            catch
+            {
+                CalculatorConfig.TextOfRichTextBoxCurrent = double.Parse(root).ToString();
+                CalculatorConfig.Status = CalculatorStatus.FLOAT;
+            }
+            return CalculatorConfig;
         }
     }
 }

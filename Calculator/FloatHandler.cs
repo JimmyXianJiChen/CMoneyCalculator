@@ -6,20 +6,18 @@ using System.Threading.Tasks;
 
 namespace Calculator
 {
-    class FloatHandler :DigitHandler
+    class FloatHandler : DigitHandler
     {
-        public FloatHandler(Calculator Calculator) : base(Calculator)
+
+        public override CalculatorConfig AddDigit(CalculatorConfig CalculatorConfig, string Digit)
         {
+            CalculatorConfig.TextOfRichTextBoxCurrent += Digit;
+            return CalculatorConfig;
         }
 
-        public override Dictionary<string, string> AddDigit(string Digit)
+        public override CalculatorConfig AddDot(CalculatorConfig CalculatorConfig, string Dot)
         {
-            return ButtonEventHandlerResultGenerator(this.Calculator.RichTextBoxPrevious.Text, this.Calculator.RichTextBoxCurrent.Text + Digit, CalculatorStatus.FLOAT);
-        }
-
-        public override Dictionary<string, string> AddDot(string Dot)
-        {
-            return NoAction();
+            return CalculatorConfig;
         }
     }
 }

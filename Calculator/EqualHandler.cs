@@ -10,54 +10,96 @@ namespace Calculator
 {
     public class EqualHandler : ButtonEventHandler
     {
-        public EqualHandler(Calculator Calculator) : base (Calculator)
+        public override CalculatorConfig AddDigit(CalculatorConfig CalculatorConfig, string Digit)
         {
+            return new CalculatorConfig(string.Empty,
+                                        Digit,
+                                        CalculatorStatus.INTEGER,
+                                        Calculator.DefaultValue,
+                                        Calculator.DefaultValue,
+                                        Calculator.DefaultOperator,
+                                        Calculator.DefaultOperator
+                             );
         }
 
-        public override Dictionary<string, string> AddDigit(string Digit)
+        public override CalculatorConfig AddDot(CalculatorConfig CalculatorConfig, string Dot)
         {
-            return ButtonEventHandlerResultGenerator(string.Empty, Digit, CalculatorStatus.INTEGER);
+            return new CalculatorConfig(string.Empty,
+                                    Calculator.DefaultFloat,
+                                    CalculatorStatus.FLOAT,
+                                    Calculator.DefaultValue,
+                                    Calculator.DefaultValue,
+                                    Calculator.DefaultOperator,
+                                    Calculator.DefaultOperator
+                            );
         }
 
-        public override Dictionary<string, string> AddDot(string Dot)
+        public override CalculatorConfig AddEqual(CalculatorConfig CalculatorConfig, string Equal)
         {
-            return ButtonEventHandlerResultGenerator(string.Empty, Calculator.DefaultFloat, CalculatorStatus.FLOAT);
+            return NoAction(CalculatorConfig);
         }
 
-        public override Dictionary<string, string> AddEqual(string Equal)
+        public override CalculatorConfig AddOperator(CalculatorConfig CalculatorConfig, string Operator)
         {
-            return NoAction();
+            return new CalculatorConfig(CalculatorConfig.TextOfRichTextBoxCurrent + Operator,
+                        CalculatorConfig.TextOfRichTextBoxCurrent,
+                        CalculatorStatus.OPERATOR,
+                        Calculator.DefaultValue,
+                        CalculatorConfig.TextOfRichTextBoxCurrent,
+                        Calculator.DefaultOperator,
+                        Operator
+                );
         }
 
-        public override Dictionary<string, string> AddOperator(string Operator)
+        public override CalculatorConfig CE(CalculatorConfig CalculatorConfig, string CE)
         {
-            Calculator.CurrentValue = this.Calculator.RichTextBoxCurrent.Text;
-            Calculator.CurrentOperator = Operator;
-            return ButtonEventHandlerResultGenerator(this.Calculator.RichTextBoxCurrent.Text + " " +　Operator + " ", this.Calculator.RichTextBoxCurrent.Text, CalculatorStatus.OPERATOR);
+            return C(CalculatorConfig, CE);
         }
 
-        public override Dictionary<string, string> CE(string CE)
+        public override CalculatorConfig Del(CalculatorConfig CalculatorConfig, string Del)
         {
-            return C(CE);
+            CalculatorConfig.TextOfRichTextBoxPrevious = string.Empty;
+            return CalculatorConfig;
         }
 
-        public override Dictionary<string, string> Del(string Del)
+        public override CalculatorConfig Negate(CalculatorConfig CalculatorConfig, string Del)
         {
-            return ButtonEventHandlerResultGenerator(string.Empty, this.Calculator.RichTextBoxCurrent.Text, CalculatorStatus.EQUAL);
-        }
-
-        public override Dictionary<string, string> Negate(string Del)
-        {
-            string NegatedResult;
+            CalculatorConfig.TextOfRichTextBoxPrevious = string.Empty;
             try
             {
-                NegatedResult = (int.Parse(this.Calculator.RichTextBoxCurrent.Text) * -1).ToString();
+                CalculatorConfig.TextOfRichTextBoxCurrent = (int.Parse(CalculatorConfig.TextOfRichTextBoxCurrent) * -1).ToString();
+                CalculatorConfig.Status = CalculatorStatus.INTEGER;
             }
             catch
             {
-                NegatedResult = (double.Parse(this.Calculator.RichTextBoxCurrent.Text) * -1).ToString();
+                CalculatorConfig.TextOfRichTextBoxCurrent = (double.Parse(CalculatorConfig.TextOfRichTextBoxCurrent) * -1).ToString();
+                CalculatorConfig.Status = CalculatorStatus.FLOAT;
             }
-            return ButtonEventHandlerResultGenerator(string.Empty, NegatedResult, CalculatorStatus.EQUAL);
+            return CalculatorConfig;
+        }
+
+        /// <summary>
+        /// 將所輸入的數字開根號
+        /// </summary>
+        /// <param name="CalculatorConfig">Calculator現在的狀態</param>
+        /// <param name="Root">Root</param>
+        /// <returns></returns>
+        /// 
+        public override CalculatorConfig Root(CalculatorConfig CalculatorConfig, string Root)
+        {
+            string root = Math.Sqrt(double.Parse(CalculatorConfig.TextOfRichTextBoxCurrent)).ToString();
+            try
+            {
+                CalculatorConfig.TextOfRichTextBoxCurrent = int.Parse(root).ToString();
+                CalculatorConfig.Status = CalculatorStatus.INTEGER;
+            }
+            catch
+            {
+                CalculatorConfig.TextOfRichTextBoxCurrent = double.Parse(root).ToString();
+                CalculatorConfig.Status = CalculatorStatus.FLOAT;
+            }
+            CalculatorConfig.TextOfRichTextBoxPrevious = string.Empty;
+            return CalculatorConfig;
         }
     }
 }

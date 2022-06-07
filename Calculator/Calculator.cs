@@ -5,36 +5,13 @@ using System.Windows.Forms;
 
 namespace Calculator
 {
-    public static class CalculatorStatus
-    {
-        /// <summary>
-        /// 正在輸入整數的狀態
-        /// </summary>
-        public const string INTEGER = "INTEGER";
-
-        /// <summary>
-        /// 正在輸入浮點數的狀態
-        /// </summary>
-        public const string FLOAT = "FLOAT";
-
-        /// <summary>
-        /// 剛輸入完運算元的狀態
-        /// </summary>
-        public const string OPERATOR = "OPERATOR";
-
-        /// <summary>
-        /// 剛輸入完等號的狀態
-        /// </summary>
-        public const string EQUAL = "EQUAL";
-    }
-
     public partial class Calculator : Form
     {
 
-        public string PreviousOperator;
-        public string CurrentOperator;
-        public string PreviousValue;
-        public string CurrentValue;
+        private string PreviousOperator;
+        private string CurrentOperator;
+        private string PreviousValue;
+        private string CurrentValue;
 
         /// <summary>
         /// 預設的整數值
@@ -45,6 +22,10 @@ namespace Calculator
         /// 預設的浮點數值
         /// </summary>
         public const string DefaultFloat = "0.";
+
+        public const string DefaultOperator = "NULL";
+
+        public const string DefaultValue = "NULL";
 
         /// <summary>
         /// 用於紀錄在各種情況下該呼叫哪個Handler的字典
@@ -74,10 +55,10 @@ namespace Calculator
 
             StatusToButtonEventHandler = new Dictionary<string, ButtonEventHandler>()
             {
-                {CalculatorStatus.INTEGER, new IntegerHandler(this) },
-                {CalculatorStatus.FLOAT, new FloatHandler(this) },
-                {CalculatorStatus.OPERATOR, new OperatorHandler(this) },
-                {CalculatorStatus.EQUAL, new EqualHandler(this) }
+                {CalculatorStatus.INTEGER, new IntegerHandler() },
+                {CalculatorStatus.FLOAT, new FloatHandler() },
+                {CalculatorStatus.OPERATOR, new OperatorHandler() },
+                {CalculatorStatus.EQUAL, new EqualHandler() }
             };
 
             ButtonTextToMethod = new Dictionary<string, string>()
@@ -101,11 +82,14 @@ namespace Calculator
                 {"CE", "CE" },
                 {"C", "C" },
                 {"Del", "Del" },
-                {"+/-", "Negate" }
+                {"+/-", "Negate" },
+                {"√", "Root"}
             };
 
-            PreviousOperator = "NULL";
-            CurrentOperator = "NULL";
+            PreviousOperator = DefaultOperator;
+            CurrentOperator = DefaultOperator;
+            PreviousValue = DefaultValue;
+            CurrentValue = DefaultValue;
         }
 
         /// <summary>
@@ -116,12 +100,35 @@ namespace Calculator
         private void ButtonClick(object sender, EventArgs e)
         {
             string ButtonText = ((Button)sender).Text;
-            //typeof(Calculator).GetMethod(ButtonToAction[Status][ButtonText]).Invoke(this, new[] { ButtonText });
             ButtonEventHandler Handler = StatusToButtonEventHandler[this.Status];
-            Dictionary<string,string> ans = (Dictionary<string, string>) typeof(ButtonEventHandler).GetMethod(ButtonTextToMethod[ButtonText]).Invoke(Handler, new[] { ButtonText });
-            this.RichTextBoxPrevious.Text = ans["PreviousText"];
-            this.RichTextBoxCurrent.Text = ans["CurrentText"];
-            this.Status = ans["Status"];
+            CalculatorConfig UpdatedConfig = (CalculatorConfig) typeof(ButtonEventHandler).GetMethod(ButtonTextToMethod[ButtonText]).Invoke(Handler, new object[] { GetCurrentConfig(), ButtonText });
+            SetCalculatorToConfig(UpdatedConfig);
+            //listBox1.Items.Add(UpdatedConfig.PreviousOperator+"/"+UpdatedConfig.CurrentOperator+"/"+UpdatedConfig.Status);
+        }
+
+        /// <summary>
+        /// 產生包含Calculator現在組成所有資訊的CalculatorConfig物件
+        /// </summary>
+        /// <returns></returns>
+        private CalculatorConfig GetCurrentConfig()
+        {
+            return new CalculatorConfig(RichTextBoxPrevious.Text, RichTextBoxCurrent.Text, Status, PreviousValue, CurrentValue, PreviousOperator, CurrentOperator);
+        }
+
+
+        /// <summary>
+        /// 將Calculator的狀態設置成所傳入的狀態
+        /// </summary>
+        /// <param name="CalculatorConfig"></param>
+        private void SetCalculatorToConfig(CalculatorConfig CalculatorConfig)
+        {
+            RichTextBoxPrevious.Text = CalculatorConfig.TextOfRichTextBoxPrevious;
+            RichTextBoxCurrent.Text = CalculatorConfig.TextOfRichTextBoxCurrent;
+            Status = CalculatorConfig.Status;
+            PreviousValue = CalculatorConfig.PreviousValue;
+            CurrentValue = CalculatorConfig.CurrentValue;
+            PreviousOperator = CalculatorConfig.PreviousOperator;
+            CurrentOperator = CalculatorConfig.CurrentOperator;
         }
     }
 }

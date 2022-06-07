@@ -12,99 +12,83 @@ namespace Calculator
 {
     public abstract class ButtonEventHandler
     {
-        protected readonly Calculator Calculator;
-
-        protected Dictionary<string, string> ButtonTextToActions = new Dictionary<string, string>();
-
-
-
-
-        public ButtonEventHandler(Calculator Calculator)
+        /// <summary>
+        /// 建構子
+        /// </summary>
+        /// <param name="Status"></param>
+        public ButtonEventHandler()
         {
-            this.Calculator = Calculator;
         }
 
-        public abstract Dictionary<string, string> AddDigit(string Digit);
+        public abstract CalculatorConfig AddDigit(CalculatorConfig CalculatorConfig, string Digit);
 
         /// <summary>
         /// 當按下運算元的按鍵時去計算前面的運算式，並將狀態切換到剛輸入運算元
         /// </summary>
         /// <param name="Operator">輸入的運算元</param>
-        public abstract Dictionary<string, string> AddOperator(string Operator);
+        public abstract CalculatorConfig AddOperator(CalculatorConfig CalculatorConfig, string Operator);
 
         /// <summary>
         /// 當按下小數點後所需完成的後續動作
         /// </summary>
         /// <param name="Dot">小數點</param>
-        public abstract Dictionary<string, string> AddDot(string Dot);
+        public abstract CalculatorConfig AddDot(CalculatorConfig CalculatorConfig, string Dot);
 
         /// <summary>
         /// 當按下等號後所需完成的後續動作
         /// </summary>
         /// <param name="Dot">小數點</param>
-        public abstract Dictionary<string, string> AddEqual(string Equal);
+        public abstract CalculatorConfig AddEqual(CalculatorConfig CalculatorConfig, string Equal);
 
         /// <summary>
         /// 清除目前輸入的數字
         /// </summary>
         /// <param name="str">按鍵的符號</param>
-        public abstract Dictionary<string, string> CE(string CE);
+        public abstract CalculatorConfig CE(CalculatorConfig CalculatorConfig, string CE);
 
         /// <summary>
         /// 清除所有的計算資料
         /// </summary>
         /// <param name="str">按鍵的符號</param>
-        public Dictionary<string, string> C(string C)
+        public CalculatorConfig C(CalculatorConfig CalculatorConfig, string C)
         {
-            return ButtonEventHandlerResultGenerator(string.Empty, Calculator.DefaultInteger, CalculatorStatus.INTEGER);
+            return new CalculatorConfig(string.Empty,
+                                        Calculator.DefaultInteger,
+                                        CalculatorStatus.INTEGER,
+                                        Calculator.DefaultValue,
+                                        Calculator.DefaultValue,
+                                        Calculator.DefaultOperator,
+                                        Calculator.DefaultOperator
+                                        );
         }
 
         /// <summary>
         /// 刪除現正輸入的數字的一個位數
         /// </summary>
         /// <param name="str">按鍵的符號</param>
-        public abstract Dictionary<string, string> Del(string Del);
+        public abstract CalculatorConfig Del(CalculatorConfig CalculatorConfig, string Del);
 
         /// <summary>
         /// 將數字轉換正負值
         /// </summary>
         /// <param name="str">Botton.Text</param>
-        public abstract Dictionary<string, string> Negate(string Del);
+        public abstract CalculatorConfig Negate(CalculatorConfig CalculatorConfig, string Negate);
 
-        public Dictionary<string, string> ButtonEventHandlerResultGenerator(string PreviousText, string CurrentText, string Status)
-        {
-            return new Dictionary<string, string>
-                {
-                    { "PreviousText", PreviousText },
-                    { "CurrentText", CurrentText },
-                    { "Status", Status }
-                };
-        }
+        /// <summary>
+        /// 將所輸入的數字開根號
+        /// </summary>
+        /// <param name="CalculatorConfig">Calculator現在的狀態</param>
+        /// <param name="Root">Root</param>
+        /// <returns></returns>
+        public abstract CalculatorConfig Root(CalculatorConfig CalculatorConfig, string Root);
 
         /// <summary>
         /// 當輸入的符號不合法時不採取任何動作
         /// </summary>
         /// <param name="str">按鍵的符號</param>
-        protected Dictionary<string, string> NoAction()
+        protected CalculatorConfig NoAction(CalculatorConfig CalculatorConfig)
         {
-            return ButtonEventHandlerResultGenerator(this.Calculator.RichTextBoxPrevious.Text, this.Calculator.RichTextBoxCurrent.Text, this.Calculator.Status);
-        }
-
-        public char? GetPreviousOperator(string Expression)
-        {
-            char[] charArray = Expression.ToCharArray();
-            char[] Operators = { '+', '-', '×', '÷' };
-            Array.Reverse(charArray);
-            string ReversedExpression = new string(charArray);
-            int IndexOfLastOperator = ReversedExpression.IndexOfAny(Operators);
-            try
-            {
-                return ReversedExpression[IndexOfLastOperator];
-            }
-            catch
-            {
-                return null;
-            }
+            return CalculatorConfig;
         }
     }
 }

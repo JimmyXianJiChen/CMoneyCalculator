@@ -8,31 +8,30 @@ namespace Calculator
 {
     class OperatorHandler : NonEqualHandler
     {
-        public OperatorHandler(Calculator Calculator) : base(Calculator)
+        public override CalculatorConfig AddDigit(CalculatorConfig CalculatorConfig, string Digit)
         {
+            CalculatorConfig.TextOfRichTextBoxCurrent = Digit;
+            CalculatorConfig.Status = CalculatorStatus.INTEGER;
+            return CalculatorConfig;
         }
 
-
-        public override Dictionary<string, string> AddDigit(string Digit)
+        public override CalculatorConfig AddDot(CalculatorConfig CalculatorConfig, string Dot)
         {
-            return ButtonEventHandlerResultGenerator(this.Calculator.RichTextBoxPrevious.Text, Digit, CalculatorStatus.INTEGER);
+            CalculatorConfig.TextOfRichTextBoxCurrent = Calculator.DefaultFloat;
+            CalculatorConfig.Status = CalculatorStatus.INTEGER;
+            return CalculatorConfig;
         }
 
-        public override Dictionary<string, string> AddDot(string Dot)
+        public override CalculatorConfig AddOperator(CalculatorConfig CalculatorConfig, string Operator)
         {
-            return ButtonEventHandlerResultGenerator(this.Calculator.RichTextBoxPrevious.Text, Calculator.DefaultFloat, CalculatorStatus.FLOAT);
+            CalculatorConfig.CurrentOperator = Operator;
+            CalculatorConfig.TextOfRichTextBoxPrevious = CalculatorConfig.TextOfRichTextBoxPrevious.Remove(CalculatorConfig.TextOfRichTextBoxPrevious.Length - 1) + Operator;
+            return CalculatorConfig;
         }
 
-        public override Dictionary<string, string> AddOperator(string Operator)
+        public override CalculatorConfig Del(CalculatorConfig CalculatorConfig, string Del)
         {
-            //TEST
-            this.Calculator.CurrentOperator = Operator;
-            return ButtonEventHandlerResultGenerator(this.Calculator.RichTextBoxPrevious.Text.Remove(this.Calculator.RichTextBoxPrevious.Text.Length-1) + " " + Operator + " ", this.Calculator.RichTextBoxCurrent.Text, CalculatorStatus.OPERATOR);
-        }
-
-        public override Dictionary<string, string> Del(string Del)
-        {
-            return NoAction();
+            return CalculatorConfig;
         }
     }
 }
